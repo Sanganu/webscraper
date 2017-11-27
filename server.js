@@ -6,11 +6,13 @@ const cheerio = require("cheerio");
 const request = require("request");
 const Promise = require("bluebird"); // new Promise for mongoose
 const mymodel = require("./webscrapmodel.js");
+const PORT = process.env.PORT || 3000;
+
 const app = express();
 
 app.use(logger("dev"));
 app.use(bodyParser.urlencoded({
-    extended: false;
+    extended: false
 }));
 
 app.use(express.static("public"));
@@ -41,9 +43,9 @@ app.post("/submit",function(req,res)
     var newscomment = new mymodel(req.body);
     newscomment.getnews();
     newscomment.lastupdatedDate();
-    
+
     newscomment.save(function(error,doc){
-         if (error)
+        if (error)
          {
            console.log("Error on saving to mongo db !!!",error)
            res.send(error);
@@ -55,4 +57,7 @@ app.post("/submit",function(req,res)
 }); // end of Post
 
 
-app.listen(3000, () => console.log('Application listening on port 3000!'));
+app.listen(PORT,function()
+{
+  console.log('Application listening on port 3000!');
+});

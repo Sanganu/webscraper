@@ -16,8 +16,10 @@ var newsSchema = new Schema({
       },
       url: {
         type: String
-      }
-      comments: String,
+      },
+      comments: {
+        type: String
+      },
       createdDate: {
         type : Date,
         default:Date.now
@@ -31,16 +33,16 @@ var newsSchema = new Schema({
 
 newsSchema.methods.getnews = function(){
 
-        var this.topic = {
-          var headline = this.headline,
-          var description = this.description,
-          var comment = this.comment
+        var topic = {
+           headline : this.headline,
+           description : this.description,
+           comment : this.comment
         };
-        return this.topic;
+        return topic;
 }
 
 newsSchema.methods.lastupdatedDate = function() {
-     this.lastUpdate = Date.now();
+     this.lastUpdate = Date.ow();
      return this.lastUpdate;
 }
 
