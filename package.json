@@ -1,0 +1,36 @@
+{
+  "name": "webscrapper",
+  "version": "1.0.0",
+  "description": "Web Scrapper Application - Nyttimes",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scodingjs/webscrapper.git"
+  },
+  "keywords": [
+    "Node",
+    "express",
+    "mongoose",
+    "cheerio"
+  ],
+  "author": "sangeetha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/scodingjs/webscrapper/issues"
+  },
+  "homepage": "https://github.com/scodingjs/webscrapper#readme",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.2",
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.16.2",
+    "mongo": "^0.1.0",
+    "mongoose": "^4.13.5",
+    "morgan": "^1.9.0",
+    "request": "^2.83.0"
+  }
+}
