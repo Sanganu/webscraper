@@ -5,10 +5,11 @@ const mongoose = require("mongoose"); // Mongodb ORM
 const cheerio = require("cheerio");
 const request = require("request");
 const Promise = require("bluebird"); // new Promise for mongoose
-const mymodel = require("./webscrapmodel.js");
+const mymodel = require("./webscrapper.js");
 const PORT = process.env.PORT || 3000;
 
 const app = express();
+var myappdb = require("./models");
 
 app.use(logger("dev"));
 app.use(bodyParser.urlencoded({
@@ -37,17 +38,47 @@ app.get("/",function(req,res)
 {
   res.send(index.html);
 }); //end of get
+app.get("/all",function(req,res)
+{
+  db.
+});
+app.get("/news",function(req,res)
+{
+  myappdb.news
+    .find({})
+    .then(function(dbnews)
+        {
+            res.json(dbnews);
+        })
+    .catch(function(err)
+       {
+           res.json(err);
+       })    ;
+});
+
+app.get("/newscomments",function(req,res)
+{
+  myappdb.newscomments
+    .find({})
+    .then(function(dbnewscom)
+        {
+            res.json(dbnewscom);
+        })
+    .catch(function(err)
+       {
+           res.json(err);
+       });
+});
 
 app.post("/submit",function(req,res)
 {
     var newscomment = new mymodel(req.body);
     newscomment.getnews();
     newscomment.lastupdatedDate();
-
     newscomment.save(function(error,doc){
         if (error)
          {
-           console.log("Error on saving to mongo db !!!",error)
+           console.log("Error on saving record to mongo db !!!",error)
            res.send(error);
          }
          else {

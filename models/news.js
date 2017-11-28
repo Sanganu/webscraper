@@ -1,23 +1,21 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
-var newsSchema = new Schema({
+var news = new Schema({
   id: {
         type: Number,
         required: true,
       },
       headline: {
         type: String,
-        required: true
+        required: true,
+        unique: true
       },
       description: {
         type: String,
         required: true
       },
       url: {
-        type: String
-      },
-      comments: {
         type: String
       },
       createdDate: {
@@ -27,11 +25,18 @@ var newsSchema = new Schema({
       lastUpdate: {
         type: Date
 
-      }
+      },
+      commentid: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "newscomment"
+        }
+      ]
+
 
 });
 
-newsSchema.methods.getnews = function(){
+news.methods.getnews = function(){
 
         var topic = {
            headline : this.headline,
@@ -41,10 +46,10 @@ newsSchema.methods.getnews = function(){
         return topic;
 }
 
-newsSchema.methods.lastupdatedDate = function() {
+news.methods.lastupdatedDate = function() {
      this.lastUpdate = Date.ow();
      return this.lastUpdate;
 }
 
-var newscomment = mongoose.model("newscomment",newsSchema);
-module.exports = newscomment;
+var news = mongoose.model("news",news);
+module.exports = news;
