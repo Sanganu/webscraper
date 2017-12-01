@@ -1,17 +1,16 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
+const cheerio = require("cheerio");
+const request = require("request");
 
-var news = new Schema({
-  id: {
-        type: Number,
-        required: true,
-      },
-      headline: {
+var movies = new Schema({
+
+      title: {
         type: String,
         required: true,
         unique: true
       },
-      description: {
+      summary: {
         type: String,
         required: true
       },
@@ -22,9 +21,14 @@ var news = new Schema({
         type : Date,
         default:Date.now
       },
+      author: {
+        type: String
+      },
+      timereviewed: {
+        type: Date
+      }
       lastUpdate: {
         type: Date
-
       },
       commentid: [
         {
@@ -32,18 +36,46 @@ var news = new Schema({
           ref: "newscomment"
         }
       ]
-
-
 });
 
-news.methods.getnews = function(){
+news.methods.getallmoviews = function(){
+  request("https://www.nytimes.com/section/movies",(error,response,html) =>
+  {
 
-        var topic = {
-           headline : this.headline,
-           description : this.description,
-           comment : this.comment
-        };
-        return topic;
+          return topic;
+
+                  if (!error && response.statusCode == 200)
+                   {
+                          // console.log(html);
+                           var $ = cheerio.load(html);
+
+                          $('div.story-body').each(function(i,element)
+                              {
+                                 console.log("======================");
+                                 var vtitle = console.log($(element).text());
+                                 var vlink = $(element).find('a').attr('href');
+                                 var vsummary = $(element).find('p.summary').text();
+                                 var vauthor = $(element).find('span.author').text();
+                                 var vtime = $(element).find(time).attr(datetime);
+                                 myappdb.news.find({})
+                                 //var url = alink.attr('href');
+                                  console.log(alink);
+
+                                 console.log("============");
+
+                                 var topic = {
+                                    title: vtitle ,
+                                    summary: vsummary,
+                                    url: vlink,
+                                    timereviewed:vtime,
+                                    author:vauthor
+                                 };
+                              }); // end div element loop
+
+                    } //end of if
+
+  }); // end of request url
+
 }
 
 news.methods.lastupdatedDate = function() {

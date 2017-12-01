@@ -1,5 +1,5 @@
 
-$.getJSON("/all", function(data) {
+$.getJSON("/", function(data) {
   console.log(data);
   for (var i = 0; i < data.length ; i++)
   {
@@ -12,7 +12,7 @@ $.getJSON("/all", function(data) {
              <td>
                 <p class ="comments">${data[i].comment}</p>
              </td>
-             
+
         </tr>
         `);
   }

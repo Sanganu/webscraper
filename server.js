@@ -86,7 +86,33 @@ app.post("/submit",function(req,res)
          }
     });  // save to db
 }); // end of Post
+// Check for Scrapped news - if it doesn't exist in database add to Schema
+request("https://www.nytimes.com/section/movies",(error,response,html) =>
+{
+          if (!error && response.statusCode == 200)
+           {
+                  // console.log(html);
+                   var $ = cheerio.load(html);
 
+                  $('div.story-body').each(function(i,element)
+                      {
+                         console.log("======================");
+                         var title = console.log($(element).text());
+                         var alink = $(element).find('a').attr('href');
+                         var summary = $(element).find('p.summary').text();
+                         var author = $(element).find('span.author').text();
+                         myappdb.news.find({})
+                         //var url = alink.attr('href');
+                          console.log(alink);
+
+                         console.log("============");
+                      });
+
+   } //end of if
+
+}); // end of request url
+
+/*
 
 app.listen(PORT,function()
 {
