@@ -63,7 +63,7 @@ news.methods.getallmoviews = function(){
 
                                  console.log("============");
 
-                                 var topic = {
+                                 var movie = {
                                     title: vtitle ,
                                     summary: vsummary,
                                     url: vlink,
