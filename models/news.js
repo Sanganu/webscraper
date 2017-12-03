@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 const cheerio = require("cheerio");
 const request = require("request");
 
-var movies = new Schema({
+var movie = new Schema({
 
       title: {
         type: String,
@@ -38,7 +38,9 @@ var movies = new Schema({
       ]
 });
 
-news.methods.getallmoviews = function(){
+var movies = mongoose.model("movie",movie);
+
+movies.methods.getallmoviews = function(){
   request("https://www.nytimes.com/section/movies",(error,response,html) =>
   {
 
@@ -52,24 +54,42 @@ news.methods.getallmoviews = function(){
                           $('div.story-body').each(function(i,element)
                               {
                                  console.log("======================");
+
                                  var vtitle = console.log($(element).text());
                                  var vlink = $(element).find('a').attr('href');
                                  var vsummary = $(element).find('p.summary').text();
                                  var vauthor = $(element).find('span.author').text();
                                  var vtime = $(element).find(time).attr(datetime);
-                                 myappdb.news.find({})
-                                 //var url = alink.attr('href');
+                                 myappdb.news
+                                   .countAndFind({'title':'vtitle','author' : 'vauthor'})
+                                   .exec(function(err,records,countrecord){
+                                     console.log("Record found");
+                                     if ( countrecord === 0)
+                                     {
+
+                                         var newmovie = new movies {
+                                                     title: vtitle ,
+                                                     summary: vsummary,
+                                                     url: vlink,
+                                                     timereviewed:vtime,
+                                                     author:vauthor
+                                                  };
+                                              newmovie.save(function(err)
+                                               {
+                                                 if(err) console.log('Error on saving new movie details');
+                                                 else console.log('Saved New movie details');
+                                               });
+                                     }
+                                   })
+                                   .catch(function(err)
+                                     {
+                                       console.log("Error --",err);
+                                     });
+
+                                 //var url = alink.at  tr('href');
                                   console.log(alink);
 
                                  console.log("============");
-
-                                 var movie = {
-                                    title: vtitle ,
-                                    summary: vsummary,
-                                    url: vlink,
-                                    timereviewed:vtime,
-                                    author:vauthor
-                                 };
                               }); // end div element loop
 
                     } //end of if
@@ -78,10 +98,10 @@ news.methods.getallmoviews = function(){
 
 }
 
-news.methods.lastupdatedDate = function() {
-     this.lastUpdate = Date.ow();
+movies.methods.lastupdatedDate = function() {
+     this.lastUpdate = Date.now();
      return this.lastUpdate;
 }
 
-var news = mongoose.model("news",news);
+
 module.exports = news;
