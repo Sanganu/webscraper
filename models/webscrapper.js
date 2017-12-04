@@ -1,4 +1,4 @@
 module.exports = {
-     news: require("./news"),
-     comments: require("./comments")
+     movies: require("./movies"),
+     scomments: require("./comments")
 }

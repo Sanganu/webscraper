@@ -2,12 +2,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");  // Something logs info about whats working and not on console.
 const mongoose = require("mongoose"); // Mongodb ORM
-//const Promise = require("bluebird"); // new Promise for mongoose
-//const mymodel = require("./webscrapper.js");
+
 const PORT = process.env.PORT || 3000;
 
 const app = express();
-var myappdb = require("./models/webscrapper");
+const myappdb = require("./models/webscrapper");
 //var myappdb = require("./webscrapper");
 
 app.use(logger("dev"));
@@ -33,32 +32,56 @@ db.once("open",function()
   console.log("Mongoose connection successful and Open.");
 }); //once connected
 
+
 app.get("/",function(req,res)
 {
-  res.send(index.html);
-}); //end of get
-/*
-app.get("/all",function(req,res)
-{
-  db.
-});*/
-app.get("/news",function(req,res)
-{
-  myappdb.news
+   //myappdb.movies.getallmovies();
+   //myappdb.movies.displaymovies();
+
+  myappdb.movies
     .find({})
-    .then(function(dbnews)
+    .exec(function(err,dbmovies)
         {
-            res.json(dbnews);
+            if(err)
+            {
+              console.log('Error in getting all movie details',err);
+            }
+            else {
+                res.json(dbmovies);
+            }
+
         })
-    .catch(function(err)
-       {
-           res.json(err);
-       })    ;
+
+});
+/* Passing with parameters along url
+
+app.post("/addcomment/:username/:comments/:rating",function(req,res)
+{
+  var commentrecord = {
+    username: req.params.username,
+    commentstr : req.params.comments,
+    rating: req.params.rating
+  }
+  myapp.comments.addusercomments(commentrecord);
 });
 
-app.get("/newscomments",function(req,res)
+*/
+
+/* This will do with request body */
+app.post("/addcomment",function(req,res)
 {
-  myappdb.newscomments
+      var commentrecord = {
+        username: req.body.username,
+        commentstr : req.body.comments,
+        rating: req.body.rating
+      }
+      myapp.comments.addusercomments(commentrecord);
+
+});
+
+app.get("/comments",function(req,res)
+{
+  myappdb.comments
     .find({})
     .then(function(dbnewscom)
         {
@@ -72,9 +95,8 @@ app.get("/newscomments",function(req,res)
 
 app.post("/submit",function(req,res)
 {
-    var newscomment = new mymodel(req.body);
-    newscomment.getnews();
-    newscomment.lastupdatedDate();
+    var comment = new mymodel(req.body);
+
     newscomment.save(function(error,doc){
         if (error)
          {
@@ -90,4 +112,4 @@ app.post("/submit",function(req,res)
 app.listen(PORT,function()
 {
   console.log('Application listening on port 3000!');
-});
+}); //app listen
