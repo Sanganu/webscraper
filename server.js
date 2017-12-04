@@ -2,14 +2,13 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");  // Something logs info about whats working and not on console.
 const mongoose = require("mongoose"); // Mongodb ORM
-const cheerio = require("cheerio");
-const request = require("request");
-const Promise = require("bluebird"); // new Promise for mongoose
-const mymodel = require("./webscrapper.js");
+//const Promise = require("bluebird"); // new Promise for mongoose
+//const mymodel = require("./webscrapper.js");
 const PORT = process.env.PORT || 3000;
 
 const app = express();
-var myappdb = require("./models");
+var myappdb = require("./models/webscrapper");
+//var myappdb = require("./webscrapper");
 
 app.use(logger("dev"));
 app.use(bodyParser.urlencoded({
@@ -23,7 +22,7 @@ app.use(express.static("public"));
 
 mongoose.Promise = Promise;
 // connect to specific database in Mongodb
-mongoose.connect('mongodb://localhost/nytimeswebscrapper',{
+mongoose.connect('mongodb://localhost/movieswebscrapper',{
   useMongoClient: true
 }); // connect to db
 
@@ -31,17 +30,18 @@ let db = mongoose.connection;
 db.on('error',console.error.bind(console,'connection error'));
 db.once("open",function()
 {
-  console.log("Mongoose connection successful.");
+  console.log("Mongoose connection successful and Open.");
 }); //once connected
 
 app.get("/",function(req,res)
 {
   res.send(index.html);
 }); //end of get
+/*
 app.get("/all",function(req,res)
 {
   db.
-});
+});*/
 app.get("/news",function(req,res)
 {
   myappdb.news
@@ -86,33 +86,6 @@ app.post("/submit",function(req,res)
          }
     });  // save to db
 }); // end of Post
-// Check for Scrapped news - if it doesn't exist in database add to Schema
-request("https://www.nytimes.com/section/movies",(error,response,html) =>
-{
-          if (!error && response.statusCode == 200)
-           {
-                  // console.log(html);
-                   var $ = cheerio.load(html);
-
-                  $('div.story-body').each(function(i,element)
-                      {
-                         console.log("======================");
-                         var title = console.log($(element).text());
-                         var alink = $(element).find('a').attr('href');
-                         var summary = $(element).find('p.summary').text();
-                         var author = $(element).find('span.author').text();
-                         myappdb.news.find({})
-                         //var url = alink.attr('href');
-                          console.log(alink);
-
-                         console.log("============");
-                      });
-
-   } //end of if
-
-}); // end of request url
-
-/*
 
 app.listen(PORT,function()
 {

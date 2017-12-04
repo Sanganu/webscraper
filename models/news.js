@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 const cheerio = require("cheerio");
 const request = require("request");
 
-var movie = new Schema({
+var movieschema = new Schema({
 
       title: {
         type: String,
@@ -26,7 +26,7 @@ var movie = new Schema({
       },
       timereviewed: {
         type: Date
-      }
+      },
       lastUpdate: {
         type: Date
       },
@@ -38,9 +38,8 @@ var movie = new Schema({
       ]
 });
 
-var movies = mongoose.model("movie",movie);
 
-movies.methods.getallmoviews = function(){
+movieschema.methods.getallmovies = function(){
   request("https://www.nytimes.com/section/movies",(error,response,html) =>
   {
 
@@ -60,6 +59,8 @@ movies.methods.getallmoviews = function(){
                                  var vsummary = $(element).find('p.summary').text();
                                  var vauthor = $(element).find('span.author').text();
                                  var vtime = $(element).find(time).attr(datetime);
+                                 // Check for Scrapped news - if it doesn't exist in database add to Schema
+
                                  myappdb.news
                                    .countAndFind({'title':'vtitle','author' : 'vauthor'})
                                    .exec(function(err,records,countrecord){
@@ -67,13 +68,13 @@ movies.methods.getallmoviews = function(){
                                      if ( countrecord === 0)
                                      {
 
-                                         var newmovie = new movies {
+                                         var newmovie = new movies ({
                                                      title: vtitle ,
                                                      summary: vsummary,
                                                      url: vlink,
                                                      timereviewed:vtime,
                                                      author:vauthor
-                                                  };
+                                                  });
                                               newmovie.save(function(err)
                                                {
                                                  if(err) console.log('Error on saving new movie details');
@@ -94,14 +95,15 @@ movies.methods.getallmoviews = function(){
 
                     } //end of if
 
-  }); // end of request url
+    }); // end of request url
 
-}
+} //end of getallmoviews
 
-movies.methods.lastupdatedDate = function() {
+movieschema.methods.lastupdatedDate = function() {
      this.lastUpdate = Date.now();
      return this.lastUpdate;
 }
 
+var movies = mongoose.model("movies",movieschema);
 
-module.exports = news;
+module.exports = movies;
