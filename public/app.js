@@ -6,6 +6,8 @@ $.getJSON("/review", function(data) {
      //console.log(data[i]);
      var clen = Number(data[i].rating.length);
      var avgrating = 0;
+     var rndstr;
+
      if (clen > 0)
      {
        var totalrating =0;
@@ -15,10 +17,11 @@ $.getJSON("/review", function(data) {
 
        }
        avgrating = totalrating / clen;
+       rndstr = avgrating.toFixed(2);
      }
     $("#movieslist").append(
       "<tr data-id='" + data[i]._id + "'><td>" +
-      data[i].title +"</td><td><p>Number of Response:"+clen+"</p><p>Average Rating: "+avgrating+
+      data[i].title +"</td><td><p>Number of Response:"+clen+"</p><p>Average Rating: "+rndstr+
       "</td><td><select class='rating' id = 'r-"+data[i]._id+"'data-id = '"+data[i]._id+"'><option value ='1'>1</option>"+
       "<option value ='2'>2</option>" +
       "<option value ='3'>3</option>" +
