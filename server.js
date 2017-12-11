@@ -1,115 +1,193 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const logger = require("morgan");  // Something logs info about whats working and not on console.
-const mongoose = require("mongoose"); // Mongodb ORM
+var express = require("express");
+var bodyParser = require("body-parser");
+var logger = require("morgan");
+var mongoose = require("mongoose");
+const request = require("request");
 
-const PORT = process.env.PORT || 3000;
 
-const app = express();
-const myappdb = require("./models/webscrapper");
-//var myappdb = require("./webscrapper");
+var cheerio = require("cheerio");
+
+// Require all models
+var db = require("./models");
+
+var PORT = process.env.PORT || 3000;
+
+//var PORT = 3000;
+
+// Initialize Express
+var app = express();
 
 app.use(logger("dev"));
-app.use(bodyParser.urlencoded({
-    extended: false
-}));
-
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static("public"));
 
-
-
-
 mongoose.Promise = Promise;
-// connect to specific database in Mongodb
-mongoose.connect('mongodb://localhost/movieswebscrapper',{
-  useMongoClient: true
-}); // connect to db
-
-let db = mongoose.connection;
-db.on('error',console.error.bind(console,'connection error'));
-db.once("open",function()
-{
-  console.log("Mongoose connection successful and Open.");
-}); //once connected
 
 
-app.get("/",function(req,res)
-{
-   //myappdb.movies.getallmovies();
-   //myappdb.movies.displaymovies();
+if(process.env.MONGODB_URI) {
+     mongoose.connect(process.env.MONGODB_URI, {
+       useMongoClient: true
+     });
+}
+else {
+     mongoose.connect("mongodb://localhost/embwebscrapper", {
+       useMongoClient: true
+     });
+     console.log("mongoose connected");
+}
 
-  myappdb.movies
-    .find({})
-    .exec(function(err,dbmovies)
-        {
-            if(err)
-            {
-              console.log('Error in getting all movie details',err);
-            }
-            else {
-                res.json(dbmovies);
-            }
+//Initialize array
+var resultset = [];
 
-        })
-
-});
-/* Passing with parameters along url
-
-app.post("/addcomment/:username/:comments/:rating",function(req,res)
-{
-  var commentrecord = {
-    username: req.params.username,
-    commentstr : req.params.comments,
-    rating: req.params.rating
-  }
-  myapp.comments.addusercomments(commentrecord);
+let dbconnect = mongoose.connection;
+dbconnect.on('error',console.error.bind(console,'connection error:'));
+dbconnect.once('open',function() {
+    console.log('Connction open -');
+    console.log('Check for new Movie Review and update the database');
+    createrecords();
 });
 
-*/
 
-/* This will do with request body */
-app.post("/addcomment",function(req,res)
-{
-      var commentrecord = {
-        username: req.body.username,
-        commentstr : req.body.comments,
-        rating: req.body.rating
-      }
-      myapp.comments.addusercomments(commentrecord);
+// Routes
 
+// Route for all movies
+app.get("/review", function(req, res) {
+ console.log("Check review");
+ db.mvcom
+   .find({})
+   .then(function(dbmovie) {
+     res.json(dbmovie);
+   })
+   .catch(function(err) {
+     res.json(err);
+   });
 });
 
-app.get("/comments",function(req,res)
-{
-  myappdb.comments
-    .find({})
-    .then(function(dbnewscom)
-        {
-            res.json(dbnewscom);
-        })
-    .catch(function(err)
-       {
-           res.json(err);
+// Route for grabbing a specific Article by id, populate it with it's note
+app.get("/review/:id", function(req, res) {
+         db.mvcom
+           .findOne({ _id: req.params.id })
+           .then(function(result) {
+             res.json(result);
+           })
+           .catch(function(err) {
+             res.json(err);
+           });
+}); // End
+
+// Route for saving/updating an Article's associated Note
+app.post("/review/:id", function(req, res) {
+      var vcomment = req.body.data;
+       db.mvcom.findAndModify({
+         query:{_id:req.params.id},
+         update:{
+           $push:{comments:{vcomment}}
+         }
+       }).then(function(result) {
+         res.json(result);
+       }) .catch(function(err) {
+           console.log("Unable to find and modifyecords");
+            res.json(err);
        });
 });
 
-app.post("/submit",function(req,res)
+function createrecords()
 {
-    var comment = new mymodel(req.body);
-
-    newscomment.save(function(error,doc){
-        if (error)
+         request("https://www.nytimes.com/section/movies",(error,response,html) =>
          {
-           console.log("Error on saving record to mongo db !!!",error)
-           res.send(error);
-         }
-         else {
-           res.send(doc);
-         }
-    });  // save to db
-}); // end of Post
+                 var $ = cheerio.load(html);
+                 var allmovies = [];
+                 $('div.story-body').each(function(i, element) {
 
-app.listen(PORT,function()
-{
-  console.log('Application listening on port 3000!');
-}); //app listen
+                         var result = {};
+                          result = {
+                             title : $(element).text().trim(),
+                             url : $(element).find('a').attr('href').trim(),
+                             summary : $(element).find('p.summary').text().trim(),
+                             author : $(element).find('span.author').text().trim()
+                           };
+                           allmovies.push(result);
+                           //console.log("allmovies",allmovies.length);
+                 }); // end div loop
+                 var insertdone = true;
+                 var i = 0
+                 //console.log("Allmovies",allmovies.length);
+                 while ( (i < allmovies.length) && (insertdone = true))
+                 {
+                   insertdone = false;
+                   addmovie(allmovies[i]);
+                   i++;
+                   //console.log("The i",i)
+                 }
+           }); // end of cheerio request on webpage
+} // End of function to create records
+
+
+   function addmovie(newone)
+   {
+
+      db.mvcom
+       .create(newone)
+       .then(function(dbmovie) {
+         insertdone = true;
+       })
+       .catch(function(err) {
+          var vrmsg  = (err.errmsg).substr(0,6);
+          if( vrmsg === 'E11000')
+             {
+               console.log("Movie details already exist");
+             }
+          else
+           console.log("Error on saving",err);
+       });
+   }  //End of function to add just the new movies to the database
+
+app.delete("/review/:id",function(req,res){
+  console.log("Removing Movie Details");
+  db.mvcom
+    .remove({_id:req.params.id})
+    .then(function(result){
+      console.log("Delete Movie Details:",result);
+      res.status(200).end();
+    })
+    .catch(function(err){
+      console.log("Error in Deleting Movie details",err);
+      res.status(404).end();
+    });
+});
+
+app.put("/rating/:id",function(req,res){
+          var vrati = parseInt(req.body.data);
+          console.log("Update route",req);
+          db.mvcom
+            .update(
+              {_id:req.params.id},
+              {$push:{rating:vrati}}
+            ).then(function(result,err){
+              if(err) {
+                console.log("Errrrrrrrr",err);
+                res.json(err);
+              }
+              else {
+                console.log("the result",result);
+                res.json(result);
+              }
+            });
+});  //Add ratings(update Movies - array of rating)
+  /*
+app.put("/review/:id",function(req,res){
+  db.mvcom
+    .find({_id:params.id},function(err,user){
+      if(err) throw err;
+      mvcom.remove(function(err){
+      if (err) throw err;
+      console.log('Movie details deleted');
+    })
+    });
+
+});
+*/
+// Start the server
+app.listen(PORT, function() {
+ console.log("App running on port " + PORT + "!");
+});

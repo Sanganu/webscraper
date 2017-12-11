@@ -10,40 +10,19 @@
     <script src ="app.js"></script>
   </head>
   <body>
-    <div class = "jumbotron">
-        <h2>Web Scrapper Application</h2>
-        <h3>Movie Review</h3>
-    </div>
-    <div>
-       <table id = "content">
-             <thead>
-               <tr>
-                   <th>Content</th>
-                   <th>Comments</th>
-               </tr>
-             </thead>
-             <tbody>
-                 <tr>
-                      <td>
-                         <h4 id ="title"></h4>
-                         <p id = "summary"></p>
-                      </td>
-                      <td>
+        <div class = "jumbotron">
+            <h2>Web Scrapper Application</h2>
+            <h3>An Application that scrappes news about Movies and lets the User enter Rating</h3>
+        </div>
 
-                      </td>
-                      <td>
-                         <p id ="comments"></p>
-                      </td>
-                 </tr>
-             </tbody>
-      </table>
-          <form>
-             User Name:<input type = "text" id ="htusername"><br />
-             Comments: <input type = "text" id="htopinion" ><br />
-             Rating: <input type = "checkbox" id ="htrating"><br />
-             <input  id = "htaddcomment" type = "submit">
-          </form>
-    </div>
-
+        <table id="wrapper" class = "container">
+              <tr class = "container-fluid">
+                 <th>Movie News</th>
+                 <th>Ratings</th>
+                 <th>Add your Rating</th>
+              </tr>
+              <tbody id="movieslist">
+              </tbody>
+        </table>
   </body>
 </html>

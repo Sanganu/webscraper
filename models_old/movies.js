@@ -1,13 +1,6 @@
 const mongoose = require("mongoose");
-//const Schema = mongoose.Schema;
 const cheerio = require("cheerio");
 const request = require("request");
-var options = {
-  useMongoClient: true
-};
-//const express = require('express');
-//const countAndFind = require("mongoose-count-and-find");
-
           var monschema = new mongoose.Schema({
 
                     title: {
@@ -27,7 +20,7 @@ var options = {
                       default:Date.now
                     },
                     author: {
-                      type: String
+                       type: String
                     },
                     timereviewed: {
                       type: Date
@@ -44,18 +37,19 @@ var options = {
               });
 
               let thmovie = mongoose.model('thmovie',monschema);
-
+/* since this is done in Server
               mongoose.Promise = Promise;
-              mongoose.connect('mongodb://localhost/mongoosetest',options);//end of mongoose connect
+              mongoose.connect('mongodb://localhost/mongoosewebscrapper',options);//end of mongoose connect
               let db = mongoose.connection;
               db.on('error', console.error.bind(console, 'connection error:'));
               db.once('open', function() {
                  console.log("Mongoose connected");
 
               });
-
+*/
               var arrayofnewmovies = [];
-
+function checkfornewmoviesadd()
+{
               request("https://www.nytimes.com/section/movies",(error,response,html) =>
               {
                             // Request web page if no error get all movie details
@@ -92,7 +86,7 @@ var options = {
                                                       else {
                                                          console.log("Details alredy exist");
                                                       }
-                                                 });
+                                                 }); //End findone
 
                                                  if (arrayofnewmovies.length > 0)
                                                  {
@@ -101,52 +95,54 @@ var options = {
                                                  else {
                                                    console.log("No new Movie Reviews");
                                                  }
-
-                                                 function insertrecord()
-                                                 {
-                                                           console.log("========3333==============");
-
-                                                           for(var i =0 ; i < arrayofnewmovies.length; i++)
-                                                           {
-
-                                                             var newmovie = new movies ({
-                                                                         title: arrayofnewmovies[i].vtitle ,
-                                                                         summary: arrayofnewmovies[i].vsummary,
-                                                                         url: arrayofnewmovies[i].vlink,
-                                                                         timereviewed:arrayofnewmovies[i].vtime,
-                                                                         author: arrayofnewmovies[i].vauthor
-                                                                      });
-                                                              newmovie.save(function(err,data)
-                                                                   {
-                                                                     if(err) console.log('Error on saving new movie details');
-                                                                     else console.log('Saved New movie details',data);
-                                                                   });
-                                                            } //end for loop
-                                                  } //end of insertrecord
-
-                                                  function updatecomment(vtitle)
-                                                  {
-                                                            thmovie.findOneAndUpdate(
-                                                               {title : vtitle},
-                                                               {$push:{"comments":"my comment"}},
-                                                               function(err)
-                                                               {
-                                                                     if(err) console.log("errrrrr");
-                                                                     else{
-                                                                       console.log("comment added");
-                                                                     }
-                                                               }); //end findOneAndUpdate
-
-                                                    } //end update comments/add comments
-
-                                           }); // end div
+                                         }); // end div
                                   } // end of if
-                                  mongoose.disconnect();
                     });  // end of request
+} //end function checkfornewmoviesadd
+
+function insertrecord()
+{
+          console.log("========3333==============");
+
+          for(var i =0 ; i < arrayofnewmovies.length; i++)
+          {
+
+            var newmovie = new movies ({
+                        title: arrayofnewmovies[i].vtitle ,
+                        summary: arrayofnewmovies[i].vsummary,
+                        url: arrayofnewmovies[i].vlink,
+                        timereviewed:arrayofnewmovies[i].vtime,
+                        author: arrayofnewmovies[i].vauthor
+                     });
+             newmovie.save(function(err,data)
+                  {
+                    if(err) console.log('Error on saving new movie details');
+                    else console.log('Saved New movie details',data);
+                  });
+           } //end for loop
+ } //end of insertrecord
+
+function updatecomment(vtitle)
+{
+          thmovie.findOneAndUpdate(
+             {title : vtitle},
+             {$push:{"comments":"my comment"}},
+             function(err)
+             {
+                   if(err) console.log("errrrrr");
+                   else{
+                     console.log("comment added");
+                   }
+             }); //end findOneAndUpdate
+
+  } //end update comments/add comments */
 
 
 
 
+
+
+/*
 trialmovieschema.methods.displaymovies = function()
 {
      movies.find({}).sort('createdDate').exec(function(data,err)
@@ -163,3 +159,6 @@ trialmovieschema.methods.lastupdatedDate  function() {
      this.lastUpdate = Date.now();
      return this.lastUpdate;
 }
+
+
+*/
