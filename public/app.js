@@ -32,7 +32,9 @@ $.getJSON("/review", function(data) {
 $(document).on("click",".addrating",function(){
      event.preventDefault();
     var  thisId = $(this).attr("data-id");
-    var vrating = $(`#r-${thisId}`).val();
+    var vrating = {
+      rati: $(`#r-${thisId}`).val()
+    };
     console.log("In the click event of Add Rating",vrating);
     $.ajax({
       method: "PUT",

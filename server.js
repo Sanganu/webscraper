@@ -157,7 +157,7 @@ app.delete("/review/:id",function(req,res){
 });
 
 app.put("/rating/:id",function(req,res){
-          var vrati = (req.body.data);
+          var vrati = (req.body.rati);
           console.log("Update route",vrati);
           db.mvcom
             .update(
