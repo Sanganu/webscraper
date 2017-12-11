@@ -11,8 +11,8 @@ $.getJSON("/review", function(data) {
        var totalrating =0;
        for(var j =0 ; j < clen ; j++)
        {
-         totalrating = Number(data[i].rating[j]);
-         console.log("tr"+totalrating);
+         totalrating = totalrating + Number(data[i].rating[j]);
+
        }
        avgrating = totalrating / clen;
      }
