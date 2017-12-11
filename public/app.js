@@ -6,7 +6,7 @@ $.getJSON("/review", function(data) {
      //console.log(data[i]);
      var clen = Number(data[i].rating.length);
      var avgrating = 0;
-     var rndstr;
+     var rndstr = '';
 
      if (clen > 0)
      {
