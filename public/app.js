@@ -24,8 +24,8 @@ $.getJSON("/review", function(data) {
       "<option value ='3'>3</option>" +
       "<option value = '4'>4</option>" +
       "<option value ='5'>5</option></select></td>" +
-      "<td><button class = 'addrating' data-id='"+data[i]._id +"'>Add Rating</button></td>"+
-      "</td><td><button class = 'remmovie' data-id='"+data[i]._id +"'>Delete this Review</button></td></tr>");
+      "<td><button class = 'addrating btn btn-info' data-id='"+data[i]._id +"'>Add Rating</button></td>"+
+      "</td><td><button class = 'remmovie btn btn-danger' data-id='"+data[i]._id +"'>Delete this Review</button></td></tr>");
   }; // End for loop for each movie review
 });
 
