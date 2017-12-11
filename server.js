@@ -157,8 +157,8 @@ app.delete("/review/:id",function(req,res){
 });
 
 app.put("/rating/:id",function(req,res){
-          var vrati = parseInt(req.body.data);
-          console.log("Update route",req);
+          var vrati = (req.body.data);
+          console.log("Update route",vrati);
           db.mvcom
             .update(
               {_id:req.params.id},
@@ -174,19 +174,7 @@ app.put("/rating/:id",function(req,res){
               }
             });
 });  //Add ratings(update Movies - array of rating)
-  /*
-app.put("/review/:id",function(req,res){
-  db.mvcom
-    .find({_id:params.id},function(err,user){
-      if(err) throw err;
-      mvcom.remove(function(err){
-      if (err) throw err;
-      console.log('Movie details deleted');
-    })
-    });
 
-});
-*/
 // Start the server
 app.listen(PORT, function() {
  console.log("App running on port " + PORT + "!");

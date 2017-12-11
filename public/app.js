@@ -11,7 +11,8 @@ $.getJSON("/review", function(data) {
        var totalrating =0;
        for(var j =0 ; j < clen ; j++)
        {
-         totalrating = data[i].rating[j];
+         totalrating = Number(data[i].rating[j]);
+         console.log("tr"+totalrating);
        }
        avgrating = totalrating / clen;
      }
@@ -25,7 +26,7 @@ $.getJSON("/review", function(data) {
       "<option value ='5'>5</option></select></td>" +
       "<td><button class = 'addrating' data-id='"+data[i]._id +"'>Add Rating</button></td>"+
       "</td><td><button class = 'remmovie' data-id='"+data[i]._id +"'>Delete this Review</button></td></tr>");
-  }; // End for loop
+  }; // End for loop for each movie review
 });
 
 $(document).on("click",".addrating",function(){
