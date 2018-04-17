@@ -1,5 +1,5 @@
-# webscrapper
-Web Scrapper Application using MongoDB
+# webscraper
+Web Scraper Application using MongoDB
 
 This Application Scrapes Movie Review Details
 from the website https://www.nytimes.com/section/movies and adds records to MongoDB making sure there is no duplicate entries. Unique Key constraint on the Title field.
